@@ -1,0 +1,41 @@
+const fs = require('fs');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const Tour = require('./../../models/tourModel');
+
+dotenv.config({ path: './config.env' });
+
+const DB = process.env.DATABASE_LOCAL;
+
+mongoose
+  .connect(DB, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+  })
+  .then(() => {
+    console.log('DB connection successful!');
+  });
+
+const tours = JSON.parse(
+  fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8'),
+);
+const importData = async () => {
+  try {
+    await Tour.create(tours);
+    console.log('data successfully loaded');
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const deleteData = async () => {
+  try {
+    await Tour.deletMany();
+    console.log('data successfully deleted');
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+console.log(process.argv);
